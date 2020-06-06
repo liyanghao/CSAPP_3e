@@ -239,7 +239,7 @@ $T_{new}=(1-\alpha)T_{old}+\alpha T_{old}/k=T_{old}[(1-\alpha)+\alpha/k]$。
 
 #### 示例2 $k=\infty$
 $k=\infty$意味着我们能将系统的某个部分加速到其花费的时间可以忽略。然后有：
-$$S_{\infty}=\frac{1}{1-\alpha}$$。
+$$S_{\infty}=\frac{1}{1-\alpha}。$$
 所以，如果我们能将系统的60%部分加速到可以不花费时间，则我们获得整体加速仅为2.5倍。
 
 
