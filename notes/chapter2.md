@@ -73,6 +73,9 @@
 ![0x173A4C.png](https://upload-images.jianshu.io/upload_images/7066251-be16d4d8862c29f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 反过来，给定一个二进制数`1111001010110110110011`，通过按照每4位分成一组，你可以将该数转换成十六进制。注意，如果整个数的位数不是4的整数倍，则你应该给最左一组的数的前面补0。然后将每个位组转换成相应的十六进制数：
+![2to16.png](https://upload-images.jianshu.io/upload_images/7066251-5e2493e31c5cd839.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
 
 
 
