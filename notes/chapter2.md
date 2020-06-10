@@ -146,6 +146,9 @@ long unsigned int
 
 #### 示例
 假设int类型的变量x的地址是0x100，x的十六进制值表示为0x01234567。从地址0x100到地址0x103存储的字节的顺序取决于机器类型：
+![大小端机器示例.png](https://upload-images.jianshu.io/upload_images/7066251-efbfee4211e5456d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
 
 
 
