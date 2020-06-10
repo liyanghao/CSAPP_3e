@@ -147,6 +147,74 @@ long unsigned int
 #### 示例
 假设int类型的变量x的地址是0x100，x的十六进制值表示为0x01234567。从地址0x100到地址0x103存储的字节的顺序取决于机器类型：
 ![大小端机器示例.png](https://upload-images.jianshu.io/upload_images/7066251-efbfee4211e5456d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+注意：在字0x01234567中，最高序字节的16进制表示为0x01，最低序字节的16进制表示为0x67。
+
+大部分兼容Intel处理器的机器都是小端机器。大部分IBM和Oracle机器都是大端机器。注意，我们说的是大部分。这种约定不是精确地按照公司为边界来划分的。比如，IBM和Oracle都制造使用兼容Intel处理器的机器，因此这些机器是小端机器。大部分最新代的微处理器都是大端的，意味着可通过配置来让它们运行在大端机器或者小端机器上。但是，在实践中，一旦某个操作系统被选定，字节序就确定下来了。比如，虽然ARM微处理器(被许多智能手机使用)有能以小端模式或者大端模式运行的硬件，但是适配这类芯片的两个最重要的操作系统(Android和IOS)只能以小端模式运行。
+
+对大部分应用程序员来说，机器上的字节序对他们是不可见的；为任何一类机器编译的程序都给出同样的结果。但是，有时，字节序就会导致问题。
+#### 示例1 网络应用
+当通过网络在不同类型的机器间来交流二进制数据时，字节序变得很重要。一种常见的问题就是将由小端机器产生的数据发送给大端机器，或者反过来。为了解决这类问题，为网络应用编写的应用必须遵守实现确定好的字节序约定，保证发送端将内部表示的数据转换成网络标准的数据，接收端机器将网络标准的数据转换成内部表示的数据。我们将在第11章里看到这种示例。
+
+#### 示例2 查看字节序列
+当查看表示整数数据的字节序列时，字节的顺序变得很重要。当审视机器码程序时，这就会发生。下面一行文本表示的是针对Intel x86-64处理器生成的机器码：
+```
+  4004d3:  01 05 43 0b 20 00       add    %eax,0x200b43(%rip)
+```
+上面一行文本是由反汇编程序`disassembler`生成的。我们将在第3章中学习更多有关disassembler和如何解释这种机器码的知识。现在，我们简单地注意到：十六进制字节序列`01 05 43 0b 20 00`是add指令的字节级别的表示，这条add指令的操作是将一个字长的数据跟存储在当前PC值加上0x200b43的地址处的数据相加。如果将最后4个字节序列43 0b 20 00取反，则有00 20 0b 43。丢掉前面的0，则有0x200b43。当阅读为小端机器生成的机器码时，将字节逆序是一个常用的操作。写字节序列的自然方式是最低编号的字节在左，最高编号的字节在右，但这跟写数的顺序相反：最高有效数字位在左，最低有效位数字在右。
+
+#### 示例3 编写规避普通类型系统的程序
+当编写需要规避普通类型系统的程序时，字节顺序就变得很重要。在C语言里，可通过强转cast或者联合union来允许根据一个对象创建时的不同数据类型来引用一个对象。虽然这种编程技巧令大部分应用程序员很失望，但是对系统级编程缺失非常有用且甚至是必要的。
+
+图2.4展示了一段使用强转来访问和打印不同程序对象的字节表示的C代码。
+```
+#include <stdio.h>
+
+typedef unsigned char *byte_pointer;
+
+void test_show_bytes(int val);
+
+int main()
+{
+	int val = 12345;
+	test_show_bytes(val);
+	return 0;
+}
+
+void show_bytes(byte_pointer start, size_t len){
+	int i;
+	for (i=0;i<len;i++){
+		printf(" %.2x\n", start[i]);
+	}
+	printf("\n");
+}
+
+void show_int(int x){
+	show_bytes((byte_pointer) &x, sizeof(int));
+}
+
+
+void show_float(float x){
+	show_bytes((byte_pointer) &x, sizeof(float));
+}
+
+void show_pointer(void *x){
+	show_bytes((byte_pointer) &x, sizeof(void *));
+}
+
+void test_show_bytes(int val){
+	int ival = val;
+	float fval = (float)val;
+	int *pval = &ival;
+
+	show_int(ival);
+	show_float(fval);
+	show_pointer(pval);
+}
+```
+- 使用`typedef`定义了数据类型byte_pointer，该数据类型是一个指向unsigned char类型对象的指针。一个byte_pointer变量可引用一个字节序列，其中每个字节是一个非负数。
+- 函数show_bytes的参数是一个字节序列的地址start，类型是byte_pointer以及字节计数，类型是size_t；
+功能：以16进制打印单个字节；
+`.2x`表示一个整数应该以16进制打印，至少得有两个数字；
 
 
 
