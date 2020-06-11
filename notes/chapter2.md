@@ -217,6 +217,35 @@ void test_show_bytes(int val){
 `.2x`表示一个整数应该以16进制打印，至少得有两个数字；
 
 
+函数`show_int`、`show_float`、`show_pointer`展示了如何使用函数`show_bytes`来打印C语言的`int`类型对象、`float`类型对象、`void*`类型对象的字节表示。观察到这三个函数传递给函数`show_bytes`的实参是指向参数x的指针&x，并将指针类型强转为类型`unsigned char*`。这里的强转给编译器透漏一个信号：程序应该考虑这个指针指向的是一个字节序列，而不是一个原数据类型的对象。然后这个指针指向的是程序对象占据的最低字节地址。
+
+这3个函数使用C语言的`sizeof`运算符来判断程序对象占据的字节数。一般地，表达式`sizeof(T)`返回的是存储T类型对象所需的字节数。
+使用`sizeof`而不是一个固定值，是朝着编写能跨不同机器类型移植的代码而跨出的一步。
+
+我们使用如下的机器：
+- Linux 32
+- Windows
+- Sun
+- Linux 64
+
+来运行图2.5给出的代码，然后结果在图2.6中给出。
+![图2.5 字节表示示例.png](https://upload-images.jianshu.io/upload_images/7066251-ccc5966f055e04a7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+![图2.6 不同数据类型的字节表示.png](https://upload-images.jianshu.io/upload_images/7066251-a1e931f1a132ad32.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+如图所示，我们使用的实参12345的16进制表示为0x00003039。
+- 对于int类型数据，除了字节顺序外，我们在所有机器上得到的结果都一样。特别地是，我们能看到最低有效字节值`0x39`在Linux32/Windows/Linux64等小端机器上都是首先输出的，在Sun等大端机器上是最后被输出的。
+- 对于float类型数据，除了字节顺序外，我们在所有机器上得到的结果都是相同的。
+- 对于指针类型数据，在所有机器上的输出都不一样。不同的机器/操作系统配置使用了不同的存储分配约定。注意到：Linux32/Windows/Sun等机器使用的是4个字节的地址，而Linux64使用的是8个字节的地址。
+
+
+观察到虽然附点数和整数数据都是对数值12345编码的，但是两者的字节模式却完全不同：整数字节模式为`0x00003039`，浮点数字节模式为`0x4640E400`。一般来说，这两种格式使用不同的编码格式。如果将这些十六进制模式拓展为二进制形式，并适当地平移，我们会发现有13个匹配的数位，如图所示：
+![模式匹配示例.png](https://upload-images.jianshu.io/upload_images/7066251-dde6c1550a0ebd96.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+注意这不是巧合。当我们研究浮点数格式时，我们将返回到这个示例。
+
+
+
 
 
 
