@@ -3,11 +3,15 @@
 typedef unsigned char *byte_pointer;
 
 void test_show_bytes(int val);
+void show_bytes(byte_pointer start, size_t len);
 
 int main()
 {
 	int val = 12345;
 	test_show_bytes(val);
+
+	// char arr[] = {'1','2','3','4','5','\0'};
+	// show_bytes((byte_pointer)&arr,6);
 	return 0;
 }
 
