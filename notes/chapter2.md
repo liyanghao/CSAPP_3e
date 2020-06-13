@@ -350,6 +350,13 @@ x^(~0xFF)
 ```
 C.将x的最低有效位都设置为1，其余字节保持不变
 x|0xFF
+
+问题2.13
+
+- `bis(x,y)`等价于`x|y`
+- `bic(x,y)`等价于`x&~y`
+- 根据`x^y=(x&~y)|(y&~x)`可知，`x^y`等价于`bis(bic(x,y),bic(y,x))`
+
 #### 示例1
 ![位运算示例.png](https://upload-images.jianshu.io/upload_images/7066251-321a8795ee578da9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 根据示例可知，确定一个位级别表达式的效果的最好方法：
