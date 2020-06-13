@@ -324,6 +324,7 @@ Claude Shannon(1916-2001)首次确立了布尔代数和数字逻辑之间的联�
 
 我们将看到使用位向量来编码集合的很多应用。
 - 在第8章里，我们将看到若干个可以解释程序执行的信号。我们可通过设置一个掩码(在第i个位置有个1表明信号i有效，在第i个位置有个0表示信号i失效)位向量来有选择地使信号失效或者有效。
+
 ### 第2.1.7节 在C语言中的位运算
 - 与运算AND
 运算符是&
@@ -334,6 +335,21 @@ Claude Shannon(1916-2001)首次确立了布尔代数和数字逻辑之间的联�
 - 异或运算EXCLUSIVE-OR
 运算符是^
 
+#### 位运算应用一：实现掩码操作
+位运算常见的应用之一是实现掩码操作，其中掩码是一个位模式，表明目的是要选定一个字内的一组位。
+- 掩码`0xFF`，即最低的8个有效位全是1，表明选定一个字的最低字节。位运算x&0xFF可产生一个由x的最低有效字节，且其他字节全是0的值。当x=0x89ABCDEF时，则x&0xFF的值就是0xEF。
+
+#### 问题2.12
+假设x=0x87654321，w=32，
+则：
+A. 保留x的最低字节位，其余位都设置为0
+x&0xFF
+B. 除最低有效字节不变外，其余字节都取补
+```
+x^(~0xFF)
+```
+C.将x的最低有效位都设置为1，其余字节保持不变
+x|0xFF
 #### 示例1
 ![位运算示例.png](https://upload-images.jianshu.io/upload_images/7066251-321a8795ee578da9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 根据示例可知，确定一个位级别表达式的效果的最好方法：
@@ -344,7 +360,6 @@ Claude Shannon(1916-2001)首次确立了布尔代数和数字逻辑之间的联�
 #### 问题2.10
 对于任何一个位向量a有a^a=0成立。
 
-考虑下面程序：
 ```
 void inplace_swap(int *x, int *y){
 	*y = *x ^ *y;
@@ -355,18 +370,90 @@ void inplace_swap(int *x, int *y){
 如名字所示，我们断言：该函数的作用是交换由指针变量x和y指向的位置存储的值。
 注意：
 - 跟通常使用的交换两个值的方式不一样，这个函数不需要第3个位置来临时存储值；
-- 这种交换两个值的方式并没有性能上的优势，仅用来智力娱乐；
+- 这种交换两个值的方式并没有性能上的优势；
 
 #### 问题2.11
-假设可使用问题2.10的inplace_swap函数，你决定写一段使得数组元素逆向的代码：朝着往数组中间元素的方向，通过交换相反端的数组元素来实现。
+源文件`reverse_array.c`
 ```
+#include<stdio.h>
+
+void inplace_swap(int *x, int *y);
+void reverse_array(int a[], int cnt);
+
+int main(void){
+	// int i;
+	// int a[] = {1,2,3,4};
+	// int size = sizeof(a)/sizeof(a[0]);
+	// for(i=0;i<size;i++){
+	// 	printf("%d ", a[i]);
+	// }
+	// printf("\n");
+
+	// reverse_array(a, size);
+
+	// for(i=0;i<size;i++){
+	// 	printf("%d ", a[i]);
+	// }
+	// printf("\n");
+
+	int i;
+	int a[] = {1,2,3,4,5};
+	int size = sizeof(a)/sizeof(a[0]);
+	for(i=0;i<size;i++){
+		printf("%d ", a[i]);
+	}
+	printf("\n");
+
+	reverse_array(a, size);
+
+	for(i=0;i<size;i++){
+		printf("%d ", a[i]);
+	}
+	printf("\n");
+	// int i;
+	// int a[] = {1,2,3,4};
+	// for(i=0;i<4;i++){
+	// 	printf("%d ", a[i]);
+	// }
+	// printf("\n");
+
+	// reverse_array(a, 4);
+
+	// for(i=0;i<4;i++){
+	// 	printf("%d ", a[i]);
+	// }
+	// printf("\n");
+
+	// int i;
+	// int a[] = {1,2,3,4,5};
+	// for(i=0;i<5;i++){
+	// 	printf("%d ", a[i]);
+	// }
+	// printf("\n");
+
+	// reverse_array(a, 5);
+
+	// for(i=0;i<5;i++){
+	// 	printf("%d ", a[i]);
+	// }
+	// printf("\n");
+	return 0;
+}
+
+void inplace_swap(int *x, int *y){
+	*y = *x ^ *y;
+	*x = *x ^ *y;
+	*y = *x ^ *y;
+}
+
 void reverse_array(int a[], int cnt){
 	int first, last;
 
-	for(frist=0, last=cnt-1; first<=last; first++， last--){
+	for(first=0,last=cnt-1;first<=last;first++,last--){
 		if (first != last) {
 			inplace_swap(&a[first], &a[last]);
 		}
+
 	}
 }
 ```
