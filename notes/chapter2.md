@@ -617,13 +617,65 @@ long能用4个字节的数来实现，常见于32位程序。
 `limit.h`定义了常数`INT_MAX`、`INT_MIN`、`UINT_MAX`分别描述了有符号数和无符号数的数值范围。
 - 对于使用了二进制补码的机器，如果整数数据类型有w位，则`INT_MAX`、`INT_MIN`、`UINT_MAX`对应的值就是$TMAX_w$、$TMin_w$、$UMax_w$。
 
+
 Java有关整数数据类型范围和表示：
 - Java要求使用二进制补码表示整数数据类型，且范围跟如图2.10所示的64位机器一致；
 - 在Java中，单字节的数据类型叫byte而不是char；
 - 前述具体的规定是为了使得Java程序不论运行其的机器或者操作系统是什么行为都是一致的；
 
 #### 二进制补码示例
+```
+#include <stdio.h>
 
+typedef unsigned char *byte_pointer;
+
+void test_show_bytes(int val);
+void show_bytes(byte_pointer start, size_t len);
+
+int main()
+{
+	short x = 12345;
+	short mx = -x;
+
+	show_bytes((byte_pointer)&x, sizeof(short));
+	show_bytes((byte_pointer)&mx, sizeof(short));
+    return 0;
+}
+
+void show_bytes(byte_pointer start, size_t len){
+	int i;
+	for (i=0;i<len;i++){
+		printf(" %.2x", start[i]);
+	}
+	printf("\n");
+}
+
+void show_int(int x){
+	show_bytes((byte_pointer) &x, sizeof(int));
+}
+
+
+void show_float(float x){
+	show_bytes((byte_pointer) &x, sizeof(float));
+}
+
+void show_pointer(void *x){
+	show_bytes((byte_pointer) &x, sizeof(void *));
+}
+
+void test_show_bytes(int val){
+	int ival = val;
+	float fval = (float)val;
+	int *pval = &ival;
+
+	show_int(ival);
+	show_float(fval);
+	show_pointer(pval);
+}
+```
+
+#### 2.2.4小节 无符号数和有符号数互转
+C语言允许不同数值类型之间的强转。
 
 
 
