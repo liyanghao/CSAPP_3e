@@ -853,6 +853,125 @@ C语言处理包含有有符号数和无符号数组合的表达式的方式会�
 - `2147483647>(int)2147483648U`的结果是1；
 
 
+### 第2.2.6小节 拓展一个数的位表示
+一种常见的操作是在不同字大小的整数间转换时，保留相同的数值。
+
+当目标数据类型太小而不能表示源数据类型值时，就无法保证转换前后有相同的值。
+
+但是，当从较小的字大小整数转换成较大的字大小整数时，通常都会保持转换前后有相同的值。
+
+如何将无符号数转换成较大的数据类型？
+**定理** 使用0来拓展无符号数
+> 定义$\vec{u}=[u_{w-1},u_{w-2},...,u_0]$是长度为$w$的向量，$\vec{u}'=[0,...,0,u_{w-1},u_{w-2},...,u_0]$是长度为$w'$的向量，其中$w'>w$，则$B2U_w(\vec{u})=B2U_{w'}(\vec{u}')$
+
+如何将二进制补码数转换成较大数据类型的数？
+**定理** 符号拓展
+> 定义$\vec{x}=[x_{w-1},x_{w-2},...,x_0]$是长度为$w$的向量，$\vec{x}'=[x_{w-1},...,x_{w-1},x_{w-1},x_{w-2},...,x_0]$是长度为$w'$的向量，其中$w'>w$，则$B2T_w(\vec{x})=B2T_{w'}(\vec{x'})$。
+
+#### 示例符号拓展和0拓展
+```
+#include <stdio.h>
+
+typedef unsigned char *byte_pointer;
+
+void show_bytes(byte_pointer start, size_t len);
+
+int main()
+{
+	short sx = -12345;
+	unsigned short usx = sx;
+	int x = sx;
+	unsigned ux = usx;
+
+	printf("sx = %d:\t", sx);
+	show_bytes((byte_pointer) &sx, sizeof(short));
+	printf("usx = %u:\t", usx);
+	show_bytes((byte_pointer)&usx, sizeof(unsigned short));
+    
+	printf("x = %d:\t", x);
+	show_bytes((byte_pointer) &x, sizeof(int));
+	printf("ux = %u:\t", ux);
+	show_bytes((byte_pointer) &ux, sizeof(unsigned));
+    return 0;
+}
+
+void show_bytes(byte_pointer start, size_t len){
+	int i;
+	for (i=0;i<len;i++){
+		printf(" %.2x", start[i]);
+	}
+	printf("\n");
+}
+
+void show_int(int x){
+	show_bytes((byte_pointer) &x, sizeof(int));
+}
+
+
+void show_float(float x){
+	show_bytes((byte_pointer) &x, sizeof(float));
+}
+
+void show_pointer(void *x){
+	show_bytes((byte_pointer) &x, sizeof(void *));
+}
+```
+输出
+```
+sx = -12345:	 c7 cf
+usx = 53191:	 c7 cf
+x = -12345:	 c7 cf ff ff
+ux = 53191:	 c7 cf 00 00
+```
+
+注意：
+不同字大小的数据类型之间的转换和无符号数跟有符号数之间转换的顺序会影响程序的值。
+```
+#include <stdio.h>
+
+typedef unsigned char *byte_pointer;
+
+void show_bytes(byte_pointer start, size_t len);
+
+int main()
+{
+	short sx = -12345;
+	unsigned uy = sx;
+
+	printf("uy = %u:\t", uy);
+	show_bytes((byte_pointer) &uy, sizeof(unsigned));
+	return 0;
+}
+
+void show_bytes(byte_pointer start, size_t len){
+	int i;
+	for (i=0;i<len;i++){
+		printf(" %.2x", start[i]);
+	}
+	printf("\n");
+}
+
+void show_int(int x){
+	show_bytes((byte_pointer) &x, sizeof(int));
+}
+
+
+void show_float(float x){
+	show_bytes((byte_pointer) &x, sizeof(float));
+}
+
+void show_pointer(void *x){
+	show_bytes((byte_pointer) &x, sizeof(void *));
+}
+```
+输出
+```
+uy = 4294954951:	 c7 cf ff ff
+```
+
+
+
+
 
 
 
