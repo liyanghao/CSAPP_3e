@@ -17,3 +17,8 @@ int main(int argc, char** argv) {
 
 	return 0;
 }
+
+int fix_ele(fix_matrix A, size_t i, size_t j)
+{
+    return A[i][j];
+}
